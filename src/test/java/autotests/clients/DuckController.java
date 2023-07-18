@@ -22,7 +22,7 @@ public class DuckController extends TestNGCitrusSpringSupport {
         this.RUNNER = runner;
     }
 
-    public void createDuck(String color, double height, String material, String sound, String wingsState) {
+    public void createDuck(String color, String height, String material, String sound, String wingsState) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .post("/api/duck/create")
@@ -38,7 +38,7 @@ public class DuckController extends TestNGCitrusSpringSupport {
         );
     }
 
-    public void updateDuck(String color, double height, int id, String material, String sound, String wingsState) {
+    public void updateDuck(String color, String height, int id, String material, String sound, String wingsState) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .put("/api/duck/update")
@@ -51,11 +51,11 @@ public class DuckController extends TestNGCitrusSpringSupport {
         );
     }
 
-    public void deleteDuck(int id) {
+    public void deleteDuck(String id) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .get("/api/duck/delete")
-                .queryParam("id", String.valueOf(id))
+                .queryParam("id", id)
         );
     }
 

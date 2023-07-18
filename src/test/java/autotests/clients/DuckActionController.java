@@ -21,37 +21,37 @@ public class DuckActionController extends TestNGCitrusSpringSupport  {
         RUNNER = runner;
     }
 
-    public void duckFly(int id) {
+    public void duckFly(String id) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .get("/api/duck/action/fly")
-                .queryParam("id", String.valueOf(id))
+                .queryParam("id", id)
         );
     }
 
-    public void duckProperties(int id) {
+    public void duckProperties(String id) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .get("/api/duck/action/properties")
-                .queryParam("id", String.valueOf(id))
+                .queryParam("id", id)
         );
     }
 
-    public void duckQuack(int id, int repetitionCount, int soundCount) {
+    public void duckQuack(String id, String repetitionCount, String soundCount) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .get("/api/duck/action/quack")
-                .queryParam("id", String.valueOf(id))
-                .queryParam("repetitionCount", String.valueOf(repetitionCount))
-                .queryParam("soundCount", String.valueOf(soundCount))
+                .queryParam("id", id)
+                .queryParam("repetitionCount", repetitionCount)
+                .queryParam("soundCount", soundCount)
         );
     }
 
-    public void duckSwim(int id) {
+    public void duckSwim(String id) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .get("/api/duck/action/swim")
-                .queryParam("id", String.valueOf(id))
+                .queryParam("id", id)
         );
     }
 }
