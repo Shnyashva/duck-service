@@ -38,13 +38,13 @@ public class DuckController extends TestNGCitrusSpringSupport {
         );
     }
 
-    public void updateDuck(String color, String height, int id, String material, String sound, String wingsState) {
+    public void updateDuck(String color, String height, String id, String material, String sound, String wingsState) {
         RUNNER.$(http().client(yellowDuckService)
                 .send()
                 .put("/api/duck/update")
                 .queryParam("color", color)
-                .queryParam("height", String.valueOf(height))
-                .queryParam("id", String.valueOf(id))
+                .queryParam("height", height)
+                .queryParam("id", id)
                 .queryParam("material", material)
                 .queryParam("sound", sound)
                 .queryParam("wingsState", wingsState)
