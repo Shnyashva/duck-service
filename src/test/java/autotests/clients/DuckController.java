@@ -70,7 +70,7 @@ public class DuckController extends TestNGCitrusSpringSupport {
         );
     }
 
-    @Description("Response validation as string")
+    @Description("Response validation with body as string")
     public void validateResponseAsString(String expectedJsonString) {
         RUNNER.$(http().client(yellowDuckService)
                 .receive()
@@ -80,7 +80,7 @@ public class DuckController extends TestNGCitrusSpringSupport {
         );
     }
 
-    @Description("Response validation from resource folder")
+    @Description("Response validation with JSON file")
     public void validateResponseFromResourceFolder(String expectedPayload) {
         RUNNER.$(http().client(yellowDuckService)
                 .receive()
@@ -90,7 +90,7 @@ public class DuckController extends TestNGCitrusSpringSupport {
         );
     }
 
-    @Description("Response validation from POJO")
+    @Description("Response validation with POJO")
     public void validateResponseFromModel(String expectedPayload) {
         RUNNER.$(http().client(yellowDuckService)
                 .receive()

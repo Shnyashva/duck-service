@@ -11,13 +11,13 @@ import lombok.experimental.Accessors;
 public class DuckProperties {
 
     @JsonProperty
-    public String color;
+    private String color;
     @JsonProperty
-    public int height;
+    private double height;
     @JsonProperty
-    public String material;
+    private String material;
     @JsonProperty
-    public String sound;
+    private String sound;
     @JsonProperty
-    public String wingsState;
+    private String wingsState;
 }
