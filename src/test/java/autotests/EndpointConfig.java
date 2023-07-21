@@ -1,6 +1,5 @@
 package autotests;
 
-import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.http.client.HttpClient;
 import com.consol.citrus.http.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;

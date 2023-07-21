@@ -4,7 +4,9 @@ import autotests.EndpointConfig;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.http.client.HttpClient;
 import com.consol.citrus.message.MessageType;
+import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
 import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.core.io.ClassPathResource;
@@ -85,7 +87,7 @@ public class DuckActionController extends TestNGCitrusSpringSupport  {
                 .receive()
                 .response(HttpStatus.OK)
                 .message().type(MessageType.JSON)
-                .body(new ClassPathResource(expectedPayload))
+                .body(new ObjectMappingPayloadBuilder(expectedPayload, new ObjectMapper()))
         );
     }
 }
