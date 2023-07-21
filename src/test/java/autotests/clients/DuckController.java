@@ -93,12 +93,12 @@ public class DuckController extends TestNGCitrusSpringSupport {
     }
 
     @Description("Response validation with POJO")
-    public void validateResponseFromModel(String expectedPayload) {
+    public void validateResponseFromModel(String model) {
         RUNNER.$(http().client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message().type(MessageType.JSON)
-                .body(new ObjectMappingPayloadBuilder(expectedPayload, new ObjectMapper()))
+                .body(new ObjectMappingPayloadBuilder(model, new ObjectMapper()))
         );
     }
 }
