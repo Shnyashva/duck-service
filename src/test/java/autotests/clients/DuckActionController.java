@@ -3,8 +3,14 @@ package autotests.clients;
 import autotests.EndpointConfig;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.http.client.HttpClient;
+import com.consol.citrus.message.MessageType;
+import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
 import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
@@ -52,6 +58,36 @@ public class DuckActionController extends TestNGCitrusSpringSupport  {
                 .send()
                 .get("/api/duck/action/swim")
                 .queryParam("id", id)
+        );
+    }
+
+    @Description("Response validation with body as string")
+    public void validateResponseAsString(String expectedJsonString) {
+        RUNNER.$(http().client(yellowDuckService)
+                .receive()
+                .response(HttpStatus.OK)
+                .message().type(MessageType.JSON)
+                .body(expectedJsonString)
+        );
+    }
+
+    @Description("Response validation with JSON file")
+    public void validateResponseFromResourceFolder(String expectedPayload) {
+        RUNNER.$(http().client(yellowDuckService)
+                .receive()
+                .response(HttpStatus.OK)
+                .message().type(MessageType.JSON)
+                .body(new ClassPathResource(expectedPayload))
+        );
+    }
+
+    @Description("Response validation with POJO")
+    public void validateResponseFromModel(Object model) {
+        RUNNER.$(http().client(yellowDuckService)
+                .receive()
+                .response(HttpStatus.OK)
+                .message().type(MessageType.JSON)
+                .body(new ObjectMappingPayloadBuilder(model, new ObjectMapper()))
         );
     }
 }
