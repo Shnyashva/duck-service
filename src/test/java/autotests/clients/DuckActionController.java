@@ -1,93 +1,31 @@
 package autotests.clients;
 
-import autotests.EndpointConfig;
+import autotests.BaseTest;
 import com.consol.citrus.TestCaseRunner;
-import com.consol.citrus.http.client.HttpClient;
-import com.consol.citrus.message.MessageType;
-import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
-import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Description;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
 
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
-@ContextConfiguration(classes = {EndpointConfig.class})
-public class DuckActionController extends TestNGCitrusSpringSupport  {
+public class DuckActionController extends BaseTest {
 
-    private final TestCaseRunner RUNNER;
-
-    @Autowired
-    protected HttpClient yellowDuckService;
-
-    public DuckActionController(TestCaseRunner runner) {
-        RUNNER = runner;
+    public void duckFly(TestCaseRunner runner, String id) {
+        sendGetRequest(runner, yellowDuckService, "/api/duck/action/fly", "id", id);
     }
 
-    public void duckFly(String id) {
-        RUNNER.$(http().client(yellowDuckService)
-                .send()
-                .get("/api/duck/action/fly")
-                .queryParam("id", id)
-        );
+    public void duckSwim(TestCaseRunner runner, String id) {
+        sendGetRequest(runner, yellowDuckService, "/api/duck/action/swim", "id", id);
     }
 
-    public void duckProperties(String id) {
-        RUNNER.$(http().client(yellowDuckService)
-                .send()
-                .get("/api/duck/action/properties")
-                .queryParam("id", id)
-        );
+    public void duckProperties(TestCaseRunner runner, String id) {
+        sendGetRequest(runner, yellowDuckService, "/api/duck/action/properties", "id", id);
     }
 
-    public void duckQuack(String id, String repetitionCount, String soundCount) {
-        RUNNER.$(http().client(yellowDuckService)
+    public void duckQuack(TestCaseRunner runner, String id, String repetitionCount, String soundCount) {
+        runner.$(http().client(yellowDuckService)
                 .send()
                 .get("/api/duck/action/quack")
                 .queryParam("id", id)
                 .queryParam("repetitionCount", repetitionCount)
                 .queryParam("soundCount", soundCount)
-        );
-    }
-
-    public void duckSwim(String id) {
-        RUNNER.$(http().client(yellowDuckService)
-                .send()
-                .get("/api/duck/action/swim")
-                .queryParam("id", id)
-        );
-    }
-
-    @Description("Response validation with body as string")
-    public void validateResponseAsString(String expectedJsonString) {
-        RUNNER.$(http().client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message().type(MessageType.JSON)
-                .body(expectedJsonString)
-        );
-    }
-
-    @Description("Response validation with JSON file")
-    public void validateResponseFromResourceFolder(String expectedPayload) {
-        RUNNER.$(http().client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message().type(MessageType.JSON)
-                .body(new ClassPathResource(expectedPayload))
-        );
-    }
-
-    @Description("Response validation with POJO")
-    public void validateResponseFromModel(Object model) {
-        RUNNER.$(http().client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message().type(MessageType.JSON)
-                .body(new ObjectMappingPayloadBuilder(model, new ObjectMapper()))
         );
     }
 }
