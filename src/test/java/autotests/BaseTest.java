@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Description;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 
 import static com.consol.citrus.dsl.JsonPathSupport.jsonPath;
@@ -23,7 +24,7 @@ public abstract class BaseTest extends TestNGCitrusSpringSupport {
     @Autowired
     protected HttpClient yellowDuckService;
 
-    @Description("Base delete request method with 1 param")
+    @Description("Base get request method with 1 param")
     protected void sendGetRequest(TestCaseRunner runner, HttpClient url, String path,
                                   String queryParamName, String queryValue) {
         runner.$(http().client(url)
@@ -41,12 +42,45 @@ public abstract class BaseTest extends TestNGCitrusSpringSupport {
         );
     }
 
+    @Description("Sending post request with data from file")
+    protected void sendPostRequestFromFile(TestCaseRunner runner, HttpClient url, String path, String filePath) {
+        runner.$(http().client(url)
+                .send()
+                .post(path)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new ClassPathResource(filePath))
+        );
+    }
+
+    @Description("Sending post request as model")
+    protected void sendPostRequestAsPayload(TestCaseRunner runner, HttpClient url, String path, Object model) {
+        runner.$(http().client(url)
+                .send()
+                .post(path)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new ObjectMappingPayloadBuilder(model, new ObjectMapper()))
+        );
+    }
+
+    @Description("Sending post request as string")
+    protected void sendPostRequestAsString(TestCaseRunner runner, HttpClient url, String path, String body) {
+        runner.$(http().client(url)
+                .send()
+                .post(path)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(body)
+        );
+    }
+
     @Description("Base delete request method")
-    protected void sendDeleteRequest(TestCaseRunner runner, HttpClient url, String path, String id) {
+    protected void sendDeleteRequest(TestCaseRunner runner, HttpClient url, String path, String paramName, String id) {
         runner.$(http().client(url)
                 .send()
                 .delete(path)
-                .queryParam("id", id)
+                .queryParam(paramName, id)
         );
     }
 
@@ -101,67 +135,9 @@ public abstract class BaseTest extends TestNGCitrusSpringSupport {
         );
     }
 
-    @Description("Validate, that duck id exists in database")
-    public void validateDuckIdInDatabase(TestCaseRunner runner) {
-        runner.$(http().client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message().type(MessageType.JSON)
-                .validate(jsonPath().expression("$.[*]", "@contains(${duckId})@"))
-        );
-    }
-
-    @Description("Sending post request with data from file")
-    protected void sendPostRequestFromFile(TestCaseRunner runner, HttpClient url, String path, String filePath) {
-        runner.$(http().client(url)
-                .send()
-                .post(path)
-                .message()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new ClassPathResource(filePath))
-        );
-    }
-
-    @Description("Sending post request as model")
-    protected void sendPostRequestAsPayload(TestCaseRunner runner, HttpClient url, String path, Object model) {
-        runner.$(http().client(url)
-                .send()
-                .post(path)
-                .message()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new ObjectMappingPayloadBuilder(model, new ObjectMapper()))
-        );
-    }
-
-    @Description("Sending post request as string")
-    protected void sendPostRequestAsString(TestCaseRunner runner, HttpClient url, String path, String body) {
-        runner.$(http().client(url)
-                .send()
-                .post(path)
-                .message()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
-        );
-    }
-
-    @Description("Create duck from file")
-    public void createDuckFromFile(TestCaseRunner runner, String filePath) {
-        sendPostRequestFromFile(runner, yellowDuckService, "/api/duck/create", filePath);
-    }
-
-    @Description("Create duck from model")
-    public void createDuckFromPayload(TestCaseRunner runner, Object model) {
-        sendPostRequestAsPayload(runner, yellowDuckService, "/api/duck/create", model);
-    }
-
-    @Description("Create duck from string")
-    public void createDuckFromString(TestCaseRunner runner, String body) {
-        sendPostRequestAsString(runner, yellowDuckService, "/api/duck/create", body);
-    }
-
     @Description("Delete duck")
     public void deleteDuck(TestCaseRunner runner, String id) {
-        sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", id);
+        sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", "id", id);
     }
 
     @Description("Extract id from body")

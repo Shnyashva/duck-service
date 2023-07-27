@@ -4,6 +4,7 @@ import autotests.clients.DuckController;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
+import org.springframework.http.HttpStatus;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
@@ -26,6 +27,7 @@ public class GetAllIdsTest extends DuckController {
         createDuckFromString(runner, DUCK);
         extractIdFromBody(runner);
         getDucksIds(runner);
-        validateDuckIdInDatabase(runner);
+        validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK,
+                "$.[*]", "@contains(${duckId})@");
     }
 }
