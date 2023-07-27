@@ -17,12 +17,13 @@ public class DuckQuackTest extends DuckActionController {
     private final String RESPONSE_MESSAGE = "quack-quack, quack-quack, quack-quack";
     private final String RESPONSE_MESSAGE_2 = "quack-quack-quack, quack-quack-quack";
     private final String RESPONSE_MESSAGE_3 = "quack-quack-quack, quack-quack-quack, quack-quack-quack";
+    private final String RESPONSE_MESSAGE_4 = "";
 
     @Test(description = "Проверка корректности количества звуков в теле ответапри передаче нулевого количества повторов")
     @CitrusTest
     public void checkMessageWithoutSoundRepetition(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
         duckQuack(runner, "${duckId}", "0", "2");
         validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK, "$.sound", EMPTY_MESSAGE);
@@ -31,8 +32,8 @@ public class DuckQuackTest extends DuckActionController {
     @Test(description = "Проверка корректности количества звуков в теле ответа при передаче двух повторов и трех звуков")
     @CitrusTest
     public void checkMessageWithTwoRepetitionAndThreeQuacks(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
         duckQuack(runner, "${duckId}", "2", "3");
         validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK, "$.sound", RESPONSE_MESSAGE);
@@ -41,8 +42,8 @@ public class DuckQuackTest extends DuckActionController {
     @Test(description = "Проверка корректности количества звуков в теле ответа при передаче трех повторов и двух звуков")
     @CitrusTest
     public void checkMessageWithThreeRepetitionAndTwoQuacks(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
         duckQuack(runner, "${duckId}", "3", "2");
         validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK, "$.sound", RESPONSE_MESSAGE_2);
@@ -51,10 +52,19 @@ public class DuckQuackTest extends DuckActionController {
     @Test(description = "Проверка корректности количества звуков в теле ответа при одинаковом количестве повторов и звуков")
     @CitrusTest
     public void checkMessageWithTheSameRepetitionAndQuackCounts(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
         duckQuack(runner, "${duckId}", "3", "3");
         validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK, "$.sound", RESPONSE_MESSAGE_3);
+    }
+
+    @Test(description = "Проверка корректности количества звуков в теле ответа при при передаче трех повторов и нуля звуков")
+    @CitrusTest
+    public void checkMessageWithThreeRepetitionAndZeroQuacks(@Optional @CitrusResource TestCaseRunner runner) {
+        runner.$(doFinally().actions(context -> deleteDuckViaSqlQuery(runner)));
+        createDuckViaSqlQuery(runner);
+        duckQuack(runner, "${duckId}", "3", "0");
+        validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK, "$.sound", RESPONSE_MESSAGE_4);
     }
 }

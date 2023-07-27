@@ -1,26 +1,26 @@
 package autotests.clients;
 
 import autotests.BaseTest;
-import autotests.interfaces.ICreateDuck;
 import com.consol.citrus.TestCaseRunner;
 
+import static autotests.constants.SqlQueries.*;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
-public class DuckActionController extends BaseTest implements ICreateDuck {
+public class DuckActionController extends BaseTest {
 
-    public void duckFly(TestCaseRunner runner, String id) {
+    protected void duckFly(TestCaseRunner runner, String id) {
         sendGetRequest(runner, yellowDuckService, "/api/duck/action/fly", "id", id);
     }
 
-    public void duckSwim(TestCaseRunner runner, String id) {
+    protected void duckSwim(TestCaseRunner runner, String id) {
         sendGetRequest(runner, yellowDuckService, "/api/duck/action/swim", "id", id);
     }
 
-    public void duckProperties(TestCaseRunner runner, String id) {
+    protected void duckProperties(TestCaseRunner runner, String id) {
         sendGetRequest(runner, yellowDuckService, "/api/duck/action/properties", "id", id);
     }
 
-    public void duckQuack(TestCaseRunner runner, String id, String repetitionCount, String soundCount) {
+    protected void duckQuack(TestCaseRunner runner, String id, String repetitionCount, String soundCount) {
         runner.$(http().client(yellowDuckService)
                 .send()
                 .get("/api/duck/action/quack")
@@ -30,18 +30,24 @@ public class DuckActionController extends BaseTest implements ICreateDuck {
         );
     }
 
-    @Override
-    public void createDuckFromFile(TestCaseRunner runner, String filePath) {
+    protected void createDuckFromFileViaPostRequest(TestCaseRunner runner, String filePath) {
         sendPostRequestFromFile(runner, yellowDuckService, "/api/duck/create", filePath);
     }
 
-    @Override
-    public void createDuckFromPayload(TestCaseRunner runner, Object model) {
+    protected void createDuckFromPayloadViaPostRequest(TestCaseRunner runner, Object model) {
         sendPostRequestAsPayload(runner, yellowDuckService, "/api/duck/create", model);
     }
 
-    @Override
-    public void createDuckFromString(TestCaseRunner runner, String body) {
-        sendPostRequestAsString(runner, yellowDuckService, "/api/duck/create", body);
+    protected void createDuckViaSqlQuery(TestCaseRunner runner) {
+        setDuckIdVariable(runner);
+        updateDataBase(runner, ducksDataBase, CREATE_TEST_DUCK_QUERY);
+    }
+
+    protected void deleteDuckViaDeleteRequest(TestCaseRunner runner, String id) {
+        sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", "id", id);
+    }
+
+    protected void deleteDuckViaSqlQuery(TestCaseRunner runner) {
+        updateDataBase(runner, ducksDataBase, DELETE_DUCK_FROM_TABLE_QUERY);
     }
 }

@@ -19,8 +19,8 @@ public class DuckPropertiesTest extends DuckActionController {
     @Test(description = "Проверка корректности тела ответа при активных крыльях. material = rubber")
     @CitrusTest
     public void checkDuckPropertiesMessageWithActiveWings(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
         duckProperties(runner, "${duckId}");
         validateResponseFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
@@ -29,8 +29,8 @@ public class DuckPropertiesTest extends DuckActionController {
     @Test(description = "Проверка корректности тела ответа при фиксированных крыльях. material = rubber")
     @CitrusTest
     public void checkDuckPropertiesMessageWithFixedWings(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_FIXED_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_FIXED_WINGS_PATH);
         extractIdFromBody(runner);
         duckProperties(runner, "${duckId}");
         validateResponseFromFile(runner, DUCK_WITH_FIXED_WINGS_PATH);
@@ -39,8 +39,8 @@ public class DuckPropertiesTest extends DuckActionController {
     @Test(description = "Проверка корректности тела ответа при неопределенных крыльях. material = rubber")
     @CitrusTest
     public void checkDuckPropertiesMessageWithUndefinedWings(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_UNDEFINED_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_UNDEFINED_WINGS_PATH);
         extractIdFromBody(runner);
         duckProperties(runner, "${duckId}");
         validateResponseFromFile(runner, DUCK_WITH_UNDEFINED_WINGS_PATH);
@@ -49,8 +49,8 @@ public class DuckPropertiesTest extends DuckActionController {
     @Test(description = "Проверка корректности тела ответа в случае материала утки, отличного от rubber")
     @CitrusTest
     public void checkDuckPropertiesMessageWithAnotherMaterial(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromPayload(runner, WOOD_DUCK);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromPayloadViaPostRequest(runner, WOOD_DUCK);
         extractIdFromBody(runner);
         duckProperties(runner, "${duckId}");
         validateResponseFromModel(runner, WOOD_DUCK);
