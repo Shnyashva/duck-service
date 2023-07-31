@@ -14,6 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 
+import static autotests.constants.SqlQueries.SELECT_LAST_DUCK_ID_FROM_DATABASE_QUERY;
+import static autotests.constants.SqlQueries.SELECT_NUMBER_OF_DUCKS_FROM_TABLE;
+import static com.consol.citrus.actions.ExecuteSQLAction.Builder.sql;
+import static com.consol.citrus.actions.ExecuteSQLQueryAction.Builder.query;
 import static com.consol.citrus.dsl.JsonPathSupport.jsonPath;
 import static com.consol.citrus.dsl.MessageSupport.MessageBodySupport.fromBody;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
@@ -23,6 +27,9 @@ public abstract class BaseTest extends TestNGCitrusSpringSupport {
 
     @Autowired
     protected HttpClient yellowDuckService;
+
+    @Autowired
+    protected SingleConnectionDataSource ducksDataBase;
 
     @Description("Base get request method with 1 param")
     protected void sendGetRequest(TestCaseRunner runner, HttpClient url, String path,
@@ -86,12 +93,12 @@ public abstract class BaseTest extends TestNGCitrusSpringSupport {
 
     @Description("Response validation with body as string")
     protected void validateResponse(TestCaseRunner runner, HttpClient url, HttpStatus status,
-                                    String expectedJsonStringOrPathToJsonFile) {
+                                    String JsonString) {
         runner.$(http().client(url)
                 .receive()
                 .response(status)
                 .message().type(MessageType.JSON)
-                .body(expectedJsonStringOrPathToJsonFile)
+                .body(JsonString)
         );
     }
 
@@ -116,17 +123,17 @@ public abstract class BaseTest extends TestNGCitrusSpringSupport {
     }
 
     @Description("Response validation with JSON file")
-    public void validateResponseFromFile(TestCaseRunner runner, String expectedPayload) {
+    protected void validateResponseFromFile(TestCaseRunner runner, String filePath) {
         runner.$(http().client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message().type(MessageType.JSON)
-                .body(new ClassPathResource(expectedPayload))
+                .body(new ClassPathResource(filePath))
         );
     }
 
     @Description("Response validation with POJO")
-    public void validateResponseFromModel(TestCaseRunner runner, Object model) {
+    protected void validateResponseFromModel(TestCaseRunner runner, Object model) {
         runner.$(http().client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
@@ -135,18 +142,57 @@ public abstract class BaseTest extends TestNGCitrusSpringSupport {
         );
     }
 
-    @Description("Delete duck")
-    public void deleteDuck(TestCaseRunner runner, String id) {
-        sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", "id", id);
-    }
-
     @Description("Extract id from body")
-    public void extractIdFromBody(TestCaseRunner runner) {
+    protected void extractIdFromBody(TestCaseRunner runner) {
         runner.$(http().client(yellowDuckService)
                 .receive()
                 .response()
                 .message().type(MessageType.JSON)
                 .extract(fromBody().expression("$.id", "duckId"))
         );
+    }
+
+    @Description("Update dataBase")
+    protected void updateDataBase(TestCaseRunner runner, SingleConnectionDataSource dataBase, String sqlQuery) {
+        runner.$(sql(dataBase).statement(sqlQuery));
+    }
+
+    @Description("Read dataBase")
+    protected void readDataBase(TestCaseRunner runner, SingleConnectionDataSource dataBase, String sqlQuery) {
+        runner.$(query(dataBase).statement(sqlQuery));
+    }
+
+    @Description("Duck properties validation in database via id")
+    protected void validateDuckInDatabase(TestCaseRunner runner, String id, String color, String height,
+                                          String material, String sound, String wingsState) {
+        runner.$(query(ducksDataBase).statement("SELECT * FROM DUCK WHERE ID=" + id)
+                .validate("COLOR", color)
+                .validate("HEIGHT", height)
+                .validate("MATERIAL", material)
+                .validate("SOUND", sound)
+                .validate("WINGS_STATE", wingsState));
+    }
+
+    @Description("Extract value from database")
+    protected void extractVariableFromColumn(TestCaseRunner runner, String SqlQuery, String columnName, String variableName) {
+        runner.$(query(ducksDataBase)
+                .statement(SqlQuery)
+                .extract(columnName, variableName)
+        );
+    }
+
+    @Description("Method for setting the duck ID, depending on whether the table is empty or not.")
+    protected void setDuckIdVariable(TestCaseRunner runner) {
+        extractVariableFromColumn(runner, SELECT_NUMBER_OF_DUCKS_FROM_TABLE, "duckcount", "duckCount");
+        runner.$(context -> {
+            int duckCount = context.getVariable("duckCount", Integer.class);
+            if (duckCount == 0) {
+                runner.variable("duckId", "1");
+            } else {
+                extractVariableFromColumn(runner, SELECT_LAST_DUCK_ID_FROM_DATABASE_QUERY, "id", "lastDuckId");
+                int lastDuckId = context.getVariable("lastDuckId", Integer.class);
+                runner.variable("duckId", Integer.toString(lastDuckId + 1));
+            }
+        });
     }
 }

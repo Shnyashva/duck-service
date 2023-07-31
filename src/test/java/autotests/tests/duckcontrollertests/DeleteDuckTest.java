@@ -19,7 +19,7 @@ public class DeleteDuckTest extends DuckController {
     public void deleteExistedDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
-        deleteDuck(runner, "${duckId}");
+        deleteDuckViaDeleteRequest(runner, "${duckId}");
         validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK, "$.message", MESSAGE);
     }
 
@@ -28,8 +28,8 @@ public class DeleteDuckTest extends DuckController {
     public void deleteNonExistedDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
-        deleteDuck(runner, "${duckId}");
-        deleteDuck(runner, "${duckId}");
+        deleteDuckViaDeleteRequest(runner, "${duckId}");
+        deleteDuckViaDeleteRequest(runner, "${duckId}");
         validateResponse(runner, yellowDuckService, HttpStatus.OK);
     }
 }

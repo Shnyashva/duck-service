@@ -1,14 +1,14 @@
 package autotests.clients;
 
 import autotests.BaseTest;
-import autotests.interfaces.ICreateDuck;
 import com.consol.citrus.TestCaseRunner;
 
+import static autotests.constants.SqlQueries.*;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
-public class DuckController extends BaseTest implements ICreateDuck {
+public class DuckController extends BaseTest {
 
-    public void updateDuck(TestCaseRunner runner, String color, String height, String id, String material, String sound, String wingsState) {
+    protected void updateDuck(TestCaseRunner runner, String color, String height, String id, String material, String sound, String wingsState) {
         runner.$(http().client(yellowDuckService)
                 .send()
                 .put("/api/duck/update")
@@ -21,22 +21,36 @@ public class DuckController extends BaseTest implements ICreateDuck {
         );
     }
 
-    public void getDucksIds(TestCaseRunner runner) {
+    protected void getDucksIds(TestCaseRunner runner) {
         sendGetRequest(runner, yellowDuckService, "/api/duck/getAllIds");
     }
 
-    @Override
-    public void createDuckFromFile(TestCaseRunner runner, String filePath) {
+    protected void createDuckFromFile(TestCaseRunner runner, String filePath) {
         sendPostRequestFromFile(runner, yellowDuckService, "/api/duck/create", filePath);
     }
 
-    @Override
-    public void createDuckFromPayload(TestCaseRunner runner, Object model) {
+    protected void createDuckFromPayload(TestCaseRunner runner, Object model) {
         sendPostRequestAsPayload(runner, yellowDuckService, "/api/duck/create", model);
     }
 
-    @Override
-    public void createDuckFromString(TestCaseRunner runner, String body) {
+    protected void createDuckFromString(TestCaseRunner runner, String body) {
         sendPostRequestAsString(runner, yellowDuckService, "/api/duck/create", body);
+    }
+
+    protected void deleteDuckViaSqlQuery(TestCaseRunner runner) {
+        updateDataBase(runner, ducksDataBase, DELETE_DUCK_FROM_TABLE_QUERY);
+    }
+
+    protected void deleteDuckViaDeleteRequest(TestCaseRunner runner, String id) {
+        sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", "id", id);
+    }
+
+    protected void createDuckViaSqlQuery(TestCaseRunner runner) {
+        setDuckIdVariable(runner);
+        updateDataBase(runner, ducksDataBase, CREATE_TEST_DUCK_QUERY);
+    }
+
+    protected void clearTable(TestCaseRunner runner) {
+        updateDataBase(runner, ducksDataBase, CLEAR_TABLE);
     }
 }

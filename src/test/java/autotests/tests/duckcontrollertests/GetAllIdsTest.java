@@ -23,11 +23,19 @@ public class GetAllIdsTest extends DuckController {
     @Test(description = "Получение массива всех уток из базы данных")
     @CitrusTest
     public void getDucks(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
         createDuckFromString(runner, DUCK);
         extractIdFromBody(runner);
         getDucksIds(runner);
         validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK,
                 "$.[*]", "@contains(${duckId})@");
+    }
+
+    @Test(description = "Получение массива всех уток из пустой базы данных")
+    @CitrusTest
+    public void getDucksFromEmptyDatabase(@Optional @CitrusResource TestCaseRunner runner) {
+        clearTable(runner);
+        getDucksIds(runner);
+        validateResponseAsJsonPath(runner, yellowDuckService, HttpStatus.OK, "$.[*]", "");
     }
 }

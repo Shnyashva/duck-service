@@ -12,7 +12,7 @@ import static autotests.constants.FilePaths.DUCK_WITH_ACTIVE_WINGS_PATH;
 import static autotests.constants.FilePaths.DUCK_WITH_FIXED_WINGS_PATH;
 import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
 
-public class DuckFlyTests extends DuckActionController {
+public class DuckFlyTest extends DuckActionController {
 
     private final String ACTIVE_WINGS_MESSAGE = "{\n" + "\"message\": \"I'm flying\"\n" + "}";
     private final String FIXED_WINGS_MESSAGE = "{\n" + "\"message\": \"I can’t fly\"\n" + "}";
@@ -20,8 +20,8 @@ public class DuckFlyTests extends DuckActionController {
     @Test(description = "Проверка корректности сообщения тела ответа при активных крыльях")
     @CitrusTest
     public void checkDuckFlyMessageWithActiveWings(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_ACTIVE_WINGS_PATH);
         extractIdFromBody(runner);
         duckFly(runner, "${duckId}");
         validateResponse(runner, yellowDuckService, HttpStatus.OK, ACTIVE_WINGS_MESSAGE);
@@ -30,8 +30,8 @@ public class DuckFlyTests extends DuckActionController {
     @Test(description = "Проверка корректности сообщения тела ответа при фиксированных крыльях")
     @CitrusTest
     public void checkDuckFlyMessageWithFixedWings(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(doFinally().actions(context -> deleteDuck(runner, "${duckId}")));
-        createDuckFromFile(runner, DUCK_WITH_FIXED_WINGS_PATH);
+        runner.$(doFinally().actions(context -> deleteDuckViaDeleteRequest(runner, "${duckId}")));
+        createDuckFromFileViaPostRequest(runner, DUCK_WITH_FIXED_WINGS_PATH);
         extractIdFromBody(runner);
         duckFly(runner, "${duckId}");
         validateResponse(runner, yellowDuckService, HttpStatus.OK, FIXED_WINGS_MESSAGE);

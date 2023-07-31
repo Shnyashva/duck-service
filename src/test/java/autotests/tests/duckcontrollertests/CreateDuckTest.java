@@ -51,4 +51,12 @@ public class CreateDuckTest extends DuckController {
         createDuckFromString(runner, EMPTY_BODY_DUCK);
         validateResponseFromFile(runner, TEST_DUCK_EMPTY_BODY_PATH);
     }
+
+    @Test(description = "Проверка корректности создания утки через sql-запрос")
+    @CitrusTest
+    public void createDuckUsingSqlQuery(@Optional @CitrusResource TestCaseRunner runner) {
+        createDuckViaSqlQuery(runner);
+        validateDuckInDatabase(runner, "${duckId}", "orange", "100.0", "glass", "nya", "ACTIVE");
+        deleteDuckViaSqlQuery(runner);
+    }
 }
